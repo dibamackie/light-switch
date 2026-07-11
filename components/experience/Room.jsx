@@ -103,7 +103,7 @@ export default function Room() {
           <meshStandardMaterial color="#24282b" roughness={0.95} />
         </mesh>
 
-        <Lamp position={[-0.78, 1.72, -0.02]} />
+        <Lamp position={[-0.62, 1.52, -0.02]} />
         <LightSwitch position={[0.88, 1.18, 0.02]} />
       </group>
 
