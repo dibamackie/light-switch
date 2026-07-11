@@ -24,21 +24,23 @@ export default function LightSwitch({ position }) {
 
   return (
     <group position={position}>
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[0.34, 0.58, 0.055]} />
-        <meshStandardMaterial color={hovered ? "#e6e1d4" : "#d8d4c9"} roughness={0.72} metalness={0.02} />
-      </mesh>
-
-      <mesh castShadow receiveShadow position={[0, 0, 0.04]}>
-        <boxGeometry args={[0.2, 0.42, 0.03]} />
-        <meshStandardMaterial color="#c7c2b8" roughness={0.78} />
-      </mesh>
-
-      <group ref={toggleRef} position={[0, isLightOn ? 0.07 : -0.07, 0.075]} rotation={[isLightOn ? -0.23 : 0.23, 0, 0]}>
+      <group scale={0.72}>
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[0.14, 0.24, 0.055]} />
-          <meshStandardMaterial color={hovered ? "#f2eadc" : "#e0d9cc"} roughness={0.66} />
+          <boxGeometry args={[0.34, 0.58, 0.055]} />
+          <meshStandardMaterial color={hovered ? "#e6e1d4" : "#d8d4c9"} roughness={0.72} metalness={0.02} />
         </mesh>
+
+        <mesh castShadow receiveShadow position={[0, 0, 0.04]}>
+          <boxGeometry args={[0.2, 0.42, 0.03]} />
+          <meshStandardMaterial color="#c7c2b8" roughness={0.78} />
+        </mesh>
+
+        <group ref={toggleRef} position={[0, isLightOn ? 0.07 : -0.07, 0.075]} rotation={[isLightOn ? -0.23 : 0.23, 0, 0]}>
+          <mesh castShadow receiveShadow>
+            <boxGeometry args={[0.14, 0.24, 0.055]} />
+            <meshStandardMaterial color={hovered ? "#f2eadc" : "#e0d9cc"} roughness={0.66} />
+          </mesh>
+        </group>
       </group>
 
       <mesh
@@ -55,9 +57,9 @@ export default function LightSwitch({ position }) {
       </mesh>
 
       <Html
-        position={[0.44, -0.03, 0.06]}
+        position={[0.34, -0.03, 0.06]}
         center
-        distanceFactor={6.5}
+        distanceFactor={7.2}
         occlude={false}
         style={{ pointerEvents: "none" }}
       >
