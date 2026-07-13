@@ -50,6 +50,11 @@ export function LightProvider({ children }) {
   const [isLightOn, setIsLightOn] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [designStep, setDesignStep] = useState("idle");
+  const [wallpaper, setWallpaper] = useState("plain");
+  const [previewWallpaper, setPreviewWallpaper] = useState(null);
+  const [chairColor, setChairColor] = useState("cream");
+  const [previewChairColor, setPreviewChairColor] = useState(null);
   const targetsRef = useRef({});
   const timelineRef = useRef(null);
   const mountedRef = useRef(false);
@@ -92,7 +97,14 @@ export function LightProvider({ children }) {
       defaults: { ease: "power2.inOut" },
       onComplete: () => {
         setIsAnimating(false);
-        if (on) startHum();
+        if (on) {
+          startHum();
+          setDesignStep((current) => current === "idle" ? "wallpaper" : current);
+        } else {
+          setDesignStep("idle");
+          setPreviewWallpaper(null);
+          setPreviewChairColor(null);
+        }
       },
       onReverseComplete: () => setIsAnimating(false)
     });
@@ -162,6 +174,22 @@ export function LightProvider({ children }) {
     setLight(!isLightOn, { interaction: true });
   }, [isAnimating, isLightOn, setLight]);
 
+  const chooseWallpaper = useCallback((nextWallpaper) => {
+    setWallpaper(nextWallpaper);
+    setPreviewWallpaper(null);
+    setDesignStep("chair");
+  }, []);
+
+  const markChairSettled = useCallback(() => {
+    setDesignStep((current) => current === "chair" ? "chair-color" : current);
+  }, []);
+
+  const chooseChairColor = useCallback((nextColor) => {
+    setChairColor(nextColor);
+    setPreviewChairColor(null);
+    setDesignStep("final");
+  }, []);
+
   const registerTarget = useCallback((name, target) => {
     if (target) {
       targetsRef.current[name] = target;
@@ -181,6 +209,7 @@ export function LightProvider({ children }) {
 
     if (savedInteraction && savedState === "on") {
       setIsLightOn(true);
+      setDesignStep("wallpaper");
       window.requestAnimationFrame(() => applyInstantState(true));
     } else {
       applyInstantState(false);
@@ -196,12 +225,39 @@ export function LightProvider({ children }) {
     isLightOn,
     hasInteracted,
     isAnimating,
+    designStep,
+    wallpaper,
+    previewWallpaper,
+    chairColor,
+    previewChairColor,
     muted,
     setMuted,
+    setPreviewWallpaper,
+    setPreviewChairColor,
+    chooseWallpaper,
+    chooseChairColor,
+    markChairSettled,
     setLight,
     toggleLight,
     registerTarget
-  }), [hasInteracted, isAnimating, isLightOn, muted, setLight, setMuted, toggleLight, registerTarget]);
+  }), [
+    chairColor,
+    chooseChairColor,
+    chooseWallpaper,
+    designStep,
+    hasInteracted,
+    isAnimating,
+    isLightOn,
+    markChairSettled,
+    muted,
+    previewChairColor,
+    previewWallpaper,
+    setLight,
+    setMuted,
+    toggleLight,
+    wallpaper,
+    registerTarget
+  ]);
 
   return <LightContext.Provider value={value}>{children}</LightContext.Provider>;
 }

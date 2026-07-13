@@ -3,60 +3,75 @@
 import { ContactShadows } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
+import gsap from "gsap";
 import * as THREE from "three";
 import { useLight } from "@/components/providers/LightProvider";
+import { getWallpaper } from "@/config/roomChoices";
 import CameraRig from "./CameraRig";
+import Chair from "./Chair";
 import DustParticles from "./DustParticles";
 import Lamp from "./Lamp";
 import Lighting from "./Lighting";
 import LightSwitch from "./LightSwitch";
 
-function makeSurfaceTexture(kind) {
-  const size = 256;
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  canvas.width = size;
-  canvas.height = size;
-
-  context.fillStyle = kind === "wall" ? "#d7d0c2" : "#bfb9ae";
-  context.fillRect(0, 0, size, size);
-
-  if (kind === "wall") {
-    context.strokeStyle = "rgba(78, 70, 60, 0.2)";
+function drawWallpaperPattern(context, size, option) {
+  if (option.pattern === "vertical") {
+    context.strokeStyle = option.line;
     context.lineWidth = 1;
-
-    for (let x = 0; x <= size; x += 32) {
+    for (let x = 0; x <= size; x += 28) {
       context.beginPath();
       context.moveTo(x + 0.5, 0);
       context.lineTo(x + 0.5, size);
       context.stroke();
     }
-
-    context.strokeStyle = "rgba(255, 250, 238, 0.28)";
-    for (let x = 16; x <= size; x += 32) {
+    context.strokeStyle = option.accent;
+    for (let x = 14; x <= size; x += 28) {
       context.beginPath();
       context.moveTo(x + 0.5, 0);
       context.lineTo(x + 0.5, size);
       context.stroke();
     }
+  }
 
-    context.strokeStyle = "rgba(84, 75, 62, 0.18)";
+  if (option.pattern === "grid") {
+    context.strokeStyle = option.line;
+    context.lineWidth = 1;
+    for (let line = 0; line <= size; line += 36) {
+      context.beginPath();
+      context.moveTo(line + 0.5, 0);
+      context.lineTo(line + 0.5, size);
+      context.moveTo(0, line + 0.5);
+      context.lineTo(size, line + 0.5);
+      context.stroke();
+    }
+  }
+
+  if (option.pattern === "arc") {
+    context.strokeStyle = option.line;
     context.lineWidth = 2;
-
-    for (let y = 20; y < size; y += 64) {
-      for (let x = 16; x < size; x += 64) {
+    for (let y = 24; y < size; y += 64) {
+      for (let x = 18; x < size; x += 58) {
         context.beginPath();
-        context.arc(x, y + 12, 11, Math.PI * 0.15, Math.PI * 0.85);
-        context.arc(x + 32, y + 12, 11, Math.PI * 0.15, Math.PI * 0.85);
-        context.stroke();
-
-        context.beginPath();
-        context.arc(x, y + 42, 11, Math.PI * 1.15, Math.PI * 1.85);
-        context.arc(x + 32, y + 42, 11, Math.PI * 1.15, Math.PI * 1.85);
+        context.arc(x, y, 12, Math.PI * 0.12, Math.PI * 0.88);
+        context.arc(x + 28, y, 12, Math.PI * 0.12, Math.PI * 0.88);
         context.stroke();
       }
     }
   }
+}
+
+function makeSurfaceTexture(kind, wallpaperId = "plain") {
+  const size = 256;
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  const wallpaper = getWallpaper(wallpaperId);
+  canvas.width = size;
+  canvas.height = size;
+
+  context.fillStyle = kind === "wall" ? wallpaper.base : "#bfb9ae";
+  context.fillRect(0, 0, size, size);
+
+  if (kind === "wall") drawWallpaperPattern(context, size, wallpaper);
 
   for (let index = 0; index < 1600; index += 1) {
     const value = 180 + Math.random() * 50;
@@ -67,7 +82,7 @@ function makeSurfaceTexture(kind) {
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(kind === "wall" ? 4.7 : 4.5, kind === "wall" ? 2.9 : 3);
+  texture.repeat.set(kind === "wall" ? 3.2 : 4.5, kind === "wall" ? 2.4 : 3);
   texture.colorSpace = THREE.SRGBColorSpace;
 
   return texture;
@@ -75,10 +90,11 @@ function makeSurfaceTexture(kind) {
 
 export default function Room() {
   const { scene, gl } = useThree();
-  const { registerTarget } = useLight();
+  const { designStep, previewWallpaper, registerTarget, wallpaper } = useLight();
   const wallMaterialRef = useRef(null);
   const floorMaterialRef = useRef(null);
-  const wallTexture = useMemo(() => makeSurfaceTexture("wall"), []);
+  const activeWallpaper = previewWallpaper || wallpaper;
+  const wallTexture = useMemo(() => makeSurfaceTexture("wall", activeWallpaper), [activeWallpaper]);
   const floorTexture = useMemo(() => makeSurfaceTexture("floor"), []);
 
   useEffect(() => {
@@ -107,6 +123,26 @@ export default function Room() {
     };
   }, [registerTarget]);
 
+  useEffect(() => {
+    if (!wallMaterialRef.current) return undefined;
+
+    const material = wallMaterialRef.current;
+    material.map = wallTexture;
+    material.needsUpdate = true;
+    material.opacity = 0.78;
+    material.transparent = true;
+
+    gsap.to(material, {
+      opacity: 1,
+      duration: 0.45,
+      ease: "power2.out"
+    });
+
+    return () => {
+      wallTexture.dispose();
+    };
+  }, [wallTexture]);
+
   return (
     <>
       <CameraRig />
@@ -119,14 +155,9 @@ export default function Room() {
             ref={wallMaterialRef}
             map={wallTexture}
             color="#3a4045"
-            roughness={0.88}
+            roughness={0.92}
             metalness={0}
           />
-        </mesh>
-
-        <mesh receiveShadow position={[0, -0.08, -0.08]}>
-          <boxGeometry args={[8.5, 0.08, 0.18]} />
-          <meshStandardMaterial color="#1f2427" roughness={0.88} />
         </mesh>
 
         <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, 1.88]}>
@@ -147,6 +178,7 @@ export default function Room() {
 
         <Lamp position={[-0.62, 1.52, -0.02]} />
         <LightSwitch position={[0.88, 1.18, 0.02]} />
+        {designStep !== "idle" && <Chair />}
       </group>
 
       <DustParticles />
