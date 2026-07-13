@@ -3,78 +3,34 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useSound() {
-  const clickRef = useRef(null);
-  const humRef = useRef(null);
   const audioContextRef = useRef(null);
+  const humRef = useRef(null);
   const [muted, setMuted] = useState(false);
 
-  const ensureAudio = useCallback(() => {
-    if (clickRef.current || humRef.current) return;
-
-    const click = new Audio("/audio/switch-click.mp3");
-    const hum = new Audio("/audio/electrical-hum.mp3");
-
-    click.volume = 0.28;
-    hum.volume = 0.08;
-    hum.loop = true;
-
-    click.addEventListener("error", () => {
-      clickRef.current = null;
-    });
-    hum.addEventListener("error", () => {
-      humRef.current = null;
-    });
-
-    clickRef.current = click;
-    humRef.current = hum;
-  }, []);
+  useEffect(() => {
+    if (muted) stopSyntheticHum(humRef);
+  }, [muted]);
 
   useEffect(() => {
     return () => {
-      clickRef.current?.pause();
-      humRef.current?.pause();
+      stopSyntheticHum(humRef);
       audioContextRef.current?.close();
-      clickRef.current = null;
-      humRef.current = null;
       audioContextRef.current = null;
     };
   }, []);
 
-  useEffect(() => {
-    if (clickRef.current) clickRef.current.muted = muted;
-    if (humRef.current) humRef.current.muted = muted;
+  const playClick = useCallback(() => {
+    if (muted) return;
+    playSyntheticClick(audioContextRef);
   }, [muted]);
 
-  const playClick = useCallback(() => {
-    ensureAudio();
-    const click = clickRef.current;
-    if (muted) return;
-
-    if (click) {
-      click.currentTime = 0;
-      click.play().catch(() => {
-        playSyntheticClick(audioContextRef);
-      });
-      return;
-    }
-
-    playSyntheticClick(audioContextRef);
-  }, [ensureAudio, muted]);
-
   const startHum = useCallback(() => {
-    ensureAudio();
-    const hum = humRef.current;
-    if (!hum || muted) return;
-
-    hum.play().catch(() => {});
-  }, [ensureAudio, muted]);
+    if (muted) return;
+    startSyntheticHum(audioContextRef, humRef);
+  }, [muted]);
 
   const stopHum = useCallback(() => {
-    const hum = humRef.current;
-    if (!hum) return;
-
-    hum.pause();
-    hum.currentTime = 0;
+    stopSyntheticHum(humRef);
   }, []);
 
   return {
@@ -86,12 +42,18 @@ export function useSound() {
   };
 }
 
-function playSyntheticClick(audioContextRef) {
+function getAudioContext(audioContextRef) {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) return;
+  if (!AudioContext) return null;
 
   const context = audioContextRef.current || new AudioContext();
   audioContextRef.current = context;
+  return context;
+}
+
+function playSyntheticClick(audioContextRef) {
+  const context = getAudioContext(audioContextRef);
+  if (!context) return;
 
   const now = context.currentTime;
   const output = context.createGain();
@@ -126,4 +88,50 @@ function playSyntheticClick(audioContextRef) {
   snap.stop(now + 0.04);
   body.start(now + 0.018);
   body.stop(now + 0.09);
+}
+
+function startSyntheticHum(audioContextRef, humRef) {
+  if (humRef.current) return;
+
+  const context = getAudioContext(audioContextRef);
+  if (!context) return;
+
+  const now = context.currentTime;
+  const output = context.createGain();
+  const low = context.createOscillator();
+  const high = context.createOscillator();
+  const lowGain = context.createGain();
+  const highGain = context.createGain();
+
+  low.type = "sine";
+  low.frequency.value = 60;
+  lowGain.gain.value = 0.035;
+
+  high.type = "sine";
+  high.frequency.value = 120;
+  highGain.gain.value = 0.018;
+
+  output.gain.setValueAtTime(0.001, now);
+  output.gain.linearRampToValueAtTime(1, now + 0.2);
+
+  low.connect(lowGain);
+  high.connect(highGain);
+  lowGain.connect(output);
+  highGain.connect(output);
+  output.connect(context.destination);
+
+  low.start(now);
+  high.start(now);
+
+  humRef.current = { low, high, output };
+}
+
+function stopSyntheticHum(humRef) {
+  const hum = humRef.current;
+  if (!hum) return;
+
+  hum.output.disconnect();
+  hum.low.stop();
+  hum.high.stop();
+  humRef.current = null;
 }
