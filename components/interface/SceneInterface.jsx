@@ -106,7 +106,7 @@ export default function SceneInterface() {
 
       {!hasInteracted && (
         <p className="pointer-events-none fixed bottom-6 left-1/2 z-20 -translate-x-1/2 text-xs uppercase tracking-[0.22em] text-current/55 sm:hidden">
-          Turn on the light.
+          Make the decision.
         </p>
       )}
 
@@ -118,14 +118,14 @@ export default function SceneInterface() {
 function getMessage(step) {
   if (step === "wallpaper") {
     return {
-      heading: "Now shape the space.",
-      body: "Choose a wallpaper."
+      heading: "The light doesn't reveal the answer.",
+      body: "It reveals where to begin."
     };
   }
 
   if (step === "chair") {
     return {
-      heading: "Every space needs a place to begin.",
+      heading: "Every choice gives the idea a little more character.",
       body: ""
     };
   }
@@ -139,14 +139,14 @@ function getMessage(step) {
 
   if (step === "final") {
     return {
-      heading: "An idea becomes clearer with every decision.",
-      body: ""
+      heading: "Great ideas aren't found.",
+      body: "They're built. One decision at a time."
     };
   }
 
   return {
-    heading: "Light changes how we see a space.",
-    body: "Switch it off. See it differently."
+    heading: "Every beginning starts with a single decision.",
+    body: ""
   };
 }
 

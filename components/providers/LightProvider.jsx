@@ -21,7 +21,7 @@ const DARK_THEME = {
   spot: 0,
   rect: 0,
   emissive: 0,
-  textOpacity: 0,
+  textOpacity: 1,
   instructionOpacity: 1,
   hazeOpacity: 0.2
 };

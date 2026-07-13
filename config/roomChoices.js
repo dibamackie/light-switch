@@ -36,9 +36,8 @@ export const wallpaperOptions = [
 export const chairColorOptions = [
   { id: "cream", label: "Cream", color: "#e8dfcf" },
   { id: "rust", label: "Rust", color: "#a75d45" },
-  { id: "olive", label: "Olive green", color: "#69745b" },
-  { id: "blue", label: "Deep blue", color: "#24384f" },
-  { id: "charcoal", label: "Charcoal", color: "#292928" }
+  { id: "charcoal", label: "Charcoal", color: "#292928" },
+  { id: "olive", label: "Olive green", color: "#69745b" }
 ];
 
 export function getWallpaper(id) {
