@@ -21,7 +21,6 @@ const DARK_THEME = {
   spot: 0,
   rect: 0,
   emissive: 0,
-  textOpacity: 1,
   instructionOpacity: 1,
   hazeOpacity: 0.2
 };
@@ -41,7 +40,6 @@ const LIGHT_THEME = {
   spot: 45,
   rect: 3.4,
   emissive: 2.6,
-  textOpacity: 1,
   instructionOpacity: 0,
   hazeOpacity: 0.08
 };
@@ -82,7 +80,6 @@ export function LightProvider({ children }) {
     if (targets.emissiveMaterial) targets.emissiveMaterial.emissiveIntensity = theme.emissive;
     if (targets.renderer) targets.renderer.toneMappingExposure = theme.exposure;
     if (targets.instruction) targets.instruction.style.opacity = theme.instructionOpacity;
-    if (targets.statement) targets.statement.style.opacity = theme.textOpacity;
     if (targets.haze) targets.haze.material.opacity = theme.hazeOpacity;
   }, []);
 
@@ -152,8 +149,6 @@ export function LightProvider({ children }) {
 
     timeline.to(document.documentElement, { "--page-bg": theme.pageBg, "--page-fg": theme.pageFg, duration: 1.0 }, 0.24);
     if (targets.instruction) timeline.to(targets.instruction, { opacity: hasInteracted || on ? 0 : 1, duration: 0.45 }, 0.05);
-    if (targets.statement) timeline.to(targets.statement, { opacity: theme.textOpacity, y: on ? 0 : 8, duration: 0.85 }, 0.7);
-
     timelineRef.current = timeline;
   }, [hasInteracted, playClick, startHum, stopHum]);
 
@@ -164,7 +159,6 @@ export function LightProvider({ children }) {
     if (options.interaction) {
       setHasInteracted(true);
       localStorage.setItem("first-light-has-interacted", "true");
-      localStorage.setItem("first-light-state", resolved ? "on" : "off");
       animateTo(resolved);
     }
   }, [animateTo, isLightOn]);
@@ -201,19 +195,12 @@ export function LightProvider({ children }) {
   }, [applyInstantState, isLightOn]);
 
   useEffect(() => {
-    const savedInteraction = localStorage.getItem("first-light-has-interacted") === "true";
-    const savedState = localStorage.getItem("first-light-state");
-
     mountedRef.current = true;
-    setHasInteracted(savedInteraction);
-
-    if (savedInteraction && savedState === "on") {
-      setIsLightOn(true);
-      setDesignStep("wallpaper");
-      window.requestAnimationFrame(() => applyInstantState(true));
-    } else {
-      applyInstantState(false);
-    }
+    localStorage.removeItem("first-light-state");
+    setIsLightOn(false);
+    setHasInteracted(false);
+    setDesignStep("idle");
+    applyInstantState(false);
   }, [applyInstantState]);
 
   useEffect(() => {

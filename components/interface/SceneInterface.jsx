@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { useLight } from "@/components/providers/LightProvider";
 import { chairColorOptions, wallpaperOptions } from "@/config/roomChoices";
 import AudioControl from "./AudioControl";
@@ -38,25 +37,30 @@ export default function SceneInterface() {
     setPreviewChairColor,
     setPreviewWallpaper,
     toggleLight,
-    wallpaper,
-    registerTarget
+    wallpaper
   } = useLight();
-  const statementRef = useRef(null);
   const message = getMessage(designStep);
-
-  useEffect(() => {
-    registerTarget("statement", statementRef.current);
-    return () => registerTarget("statement", null);
-  }, [registerTarget]);
+  const messageColor = designStep === "idle" ? "text-white" : "text-[#25231f]";
+  const eyebrow = designStep === "idle" ? "First light" : "Next decision";
 
   return (
     <>
       <div
-        ref={statementRef}
-        className="pointer-events-none fixed left-6 top-8 z-20 max-w-[18rem] translate-y-2 opacity-0 sm:left-10 sm:top-10 md:max-w-sm"
+        key={designStep}
+        className={`pointer-events-none fixed left-6 top-[12dvh] z-20 max-w-[22rem] motion-safe:animate-message-rise sm:left-10 md:left-16 md:max-w-xl ${messageColor}`}
       >
-        <p className="text-balance text-xl font-medium leading-tight text-current sm:text-2xl">{message.heading}</p>
-        {message.body && <p className="mt-3 text-sm leading-relaxed text-current/70">{message.body}</p>}
+        <p className="mb-5 flex items-center gap-3 text-[10px] uppercase tracking-[0.34em] opacity-55">
+          <span className="h-px w-8 bg-current" />
+          {eyebrow}
+        </p>
+        <p className="text-balance text-3xl font-medium leading-[1.04] sm:text-5xl md:text-6xl">
+          {message.heading}
+        </p>
+        {message.body && (
+          <p className="mt-6 max-w-sm text-pretty text-base leading-7 opacity-68 sm:text-lg">
+            {message.body}
+          </p>
+        )}
       </div>
 
       {designStep === "wallpaper" && (
@@ -132,7 +136,7 @@ function getMessage(step) {
 
   if (step === "chair-color") {
     return {
-      heading: "Choose how it feels.",
+      heading: "Every choice gives the idea a little more character.",
       body: ""
     };
   }

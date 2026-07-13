@@ -15,6 +15,7 @@ export default function Chair() {
   const { chairColor, designStep, markChairSettled, previewChairColor } = useLight();
   const { scene } = useGLTF(CHAIR_MODEL);
   const groupRef = useRef(null);
+  const settleTimerRef = useRef(null);
   const activeColor = getChairColor(previewChairColor || chairColor).color;
 
   const { chairScene, fabricMaterial, settledY } = useMemo(() => {
@@ -56,14 +57,19 @@ export default function Chair() {
 
     const timeline = gsap.timeline({
       defaults: { ease: "power2.out" },
-      onComplete: markChairSettled
+      onComplete: () => {
+        settleTimerRef.current = window.setTimeout(markChairSettled, 1200);
+      }
     });
 
     timeline.to(group.scale, { x: CHAIR_SCALE, y: CHAIR_SCALE, z: CHAIR_SCALE, duration: 0.65 }, 0);
     timeline.to(group.position, { x: -1.58, y: settledY, z: 1.18, duration: 0.95 }, 0.05);
     timeline.to(group.rotation, { y: 0.28, duration: 0.95 }, 0.05);
 
-    return () => timeline.kill();
+    return () => {
+      timeline.kill();
+      if (settleTimerRef.current) window.clearTimeout(settleTimerRef.current);
+    };
   }, [designStep, markChairSettled, settledY]);
 
   useEffect(() => {
