@@ -12,7 +12,7 @@ export default function AudioControl() {
       type="button"
       aria-label={muted ? "Unmute audio" : "Mute audio"}
       onClick={() => setMuted(!muted)}
-      className="fixed bottom-5 right-5 z-30 grid h-10 w-10 place-items-center rounded-full border border-current/20 bg-transparent text-current opacity-55 transition hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200"
+      className="fixed bottom-4 right-4 z-30 grid h-11 w-11 place-items-center rounded-full border border-current/20 bg-transparent text-current opacity-55 transition hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200 sm:bottom-5 sm:right-5 sm:h-10 sm:w-10"
     >
       <Icon aria-hidden="true" className="h-4 w-4" />
     </button>

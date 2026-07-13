@@ -16,9 +16,9 @@ export default function CameraRig() {
     const landscape = size.width > size.height;
 
     if (mobile && !landscape) {
-      basePosition.current.set(2.2, 1.3, 5.35);
-      target.current.set(-0.06, 1.14, 0.03);
-      camera.fov = 52;
+      basePosition.current.set(2.12, 1.42, 6.25);
+      target.current.set(-0.18, 1.05, 0.18);
+      camera.fov = 56;
     } else if (mobile && landscape) {
       basePosition.current.set(2.62, 1.24, 4.1);
       target.current.set(0.05, 1.13, 0.03);

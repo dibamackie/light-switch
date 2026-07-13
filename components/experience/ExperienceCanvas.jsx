@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import * as THREE from "three";
 import LoadingScreen from "@/components/interface/LoadingScreen";
+import { LightContext, useLight } from "@/components/providers/LightProvider";
 import Room from "./Room";
 
 function supportsWebGL() {
@@ -19,6 +20,7 @@ function supportsWebGL() {
 }
 
 export default function ExperienceCanvas() {
+  const lightContext = useLight();
   const [webglReady, setWebglReady] = useState(true);
   const [canvasReady, setCanvasReady] = useState(false);
   const dpr = useMemo(() => {
@@ -57,7 +59,9 @@ export default function ExperienceCanvas() {
         }}
       >
         <Suspense fallback={null}>
-          <Room />
+          <LightContext.Provider value={lightContext}>
+            <Room />
+          </LightContext.Provider>
         </Suspense>
       </Canvas>
       <div className={`pointer-events-none absolute inset-0 transition-opacity duration-700 ${canvasReady ? "opacity-0" : "opacity-100"}`}>

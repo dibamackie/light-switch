@@ -92,6 +92,7 @@ export default function Room() {
   const { scene, gl } = useThree();
   const { designStep, previewWallpaper, registerTarget, wallpaper } = useLight();
   const wallMaterialRef = useRef(null);
+  const ceilingMaterialRef = useRef(null);
   const floorMaterialRef = useRef(null);
   const activeWallpaper = previewWallpaper || wallpaper;
   const wallTexture = useMemo(() => makeSurfaceTexture("wall", activeWallpaper), [activeWallpaper]);
@@ -115,10 +116,12 @@ export default function Room() {
 
   useEffect(() => {
     registerTarget("wallMaterial", wallMaterialRef.current);
+    registerTarget("ceilingMaterial", ceilingMaterialRef.current);
     registerTarget("floorMaterial", floorMaterialRef.current);
 
     return () => {
       registerTarget("wallMaterial", null);
+      registerTarget("ceilingMaterial", null);
       registerTarget("floorMaterial", null);
     };
   }, [registerTarget]);
@@ -156,6 +159,16 @@ export default function Room() {
             map={wallTexture}
             color="#3a4045"
             roughness={0.92}
+            metalness={0}
+          />
+        </mesh>
+
+        <mesh receiveShadow rotation={[Math.PI / 2, 0, 0]} position={[0, 3.52, 1.9]}>
+          <planeGeometry args={[8.5, 4.9]} />
+          <meshStandardMaterial
+            ref={ceilingMaterialRef}
+            color="#30363b"
+            roughness={0.96}
             metalness={0}
           />
         </mesh>

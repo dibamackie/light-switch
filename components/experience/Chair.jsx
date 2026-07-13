@@ -6,17 +6,21 @@ import gsap from "gsap";
 import * as THREE from "three";
 import { useLight } from "@/components/providers/LightProvider";
 import { getChairColor } from "@/config/roomChoices";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 const CHAIR_MODEL = "https://threejs.org/examples/models/gltf/SheenChair.glb";
 const FLOOR_Y = -0.2;
-const CHAIR_SCALE = 2.1;
 
 export default function Chair() {
   const { chairColor, designStep, markChairSettled, previewChairColor } = useLight();
   const { scene } = useGLTF(CHAIR_MODEL);
+  const isMobile = useIsMobile();
   const groupRef = useRef(null);
   const settleTimerRef = useRef(null);
   const activeColor = getChairColor(previewChairColor || chairColor).color;
+  const chairScale = isMobile ? 1.55 : 2.1;
+  const startPosition = useMemo(() => isMobile ? [-1.16, 0, 1.2] : [-1.72, 0, 1.28], [isMobile]);
+  const settledPosition = useMemo(() => isMobile ? [-1.04, 0, 1.08] : [-1.58, 0, 1.18], [isMobile]);
 
   const { chairScene, fabricMaterial, settledY } = useMemo(() => {
     const clone = scene.clone(true);
@@ -42,16 +46,16 @@ export default function Chair() {
     return {
       chairScene: clone,
       fabricMaterial: nextFabricMaterial,
-      settledY: FLOOR_Y - bounds.min.y * CHAIR_SCALE
+      settledY: FLOOR_Y - bounds.min.y * chairScale
     };
-  }, [scene]);
+  }, [chairScale, scene]);
 
   useEffect(() => {
     if (!groupRef.current || designStep !== "chair") return undefined;
 
     const group = groupRef.current;
     group.visible = true;
-    group.position.set(-1.72, settledY + 0.9, 1.28);
+    group.position.set(startPosition[0], settledY + 0.9, startPosition[2]);
     group.rotation.set(0, 0.18, 0);
     group.scale.setScalar(0.001);
 
@@ -62,15 +66,15 @@ export default function Chair() {
       }
     });
 
-    timeline.to(group.scale, { x: CHAIR_SCALE, y: CHAIR_SCALE, z: CHAIR_SCALE, duration: 0.65 }, 0);
-    timeline.to(group.position, { x: -1.58, y: settledY, z: 1.18, duration: 0.95 }, 0.05);
+    timeline.to(group.scale, { x: chairScale, y: chairScale, z: chairScale, duration: 0.65 }, 0);
+    timeline.to(group.position, { x: settledPosition[0], y: settledY, z: settledPosition[2], duration: 0.95 }, 0.05);
     timeline.to(group.rotation, { y: 0.28, duration: 0.95 }, 0.05);
 
     return () => {
       timeline.kill();
       if (settleTimerRef.current) window.clearTimeout(settleTimerRef.current);
     };
-  }, [designStep, markChairSettled, settledY]);
+  }, [chairScale, designStep, markChairSettled, settledPosition, settledY, startPosition]);
 
   useEffect(() => {
     const material = fabricMaterial;
@@ -91,7 +95,7 @@ export default function Chair() {
   if (designStep === "idle" || designStep === "wallpaper") return null;
 
   return (
-    <group ref={groupRef} position={[-1.72, settledY + 0.9, 1.28]} rotation={[0, 0.18, 0]} scale={0.001}>
+    <group ref={groupRef} position={[startPosition[0], settledY + 0.9, startPosition[2]]} rotation={[0, 0.18, 0]} scale={0.001}>
       <primitive object={chairScene} />
     </group>
   );
