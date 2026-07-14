@@ -88,9 +88,10 @@ export function LightProvider({ children }) {
     if (targets.haze) targets.haze.material.opacity = theme.hazeOpacity;
   }, []);
 
-  const animateTo = useCallback((on) => {
+  const animateTo = useCallback((on, options = {}) => {
     const targets = targetsRef.current;
     const theme = on ? LIGHT_THEME : DARK_THEME;
+    const preserveScene = options.preserveScene ?? false;
 
     timelineRef.current?.kill();
     setIsAnimating(true);
@@ -102,7 +103,7 @@ export function LightProvider({ children }) {
         if (on) {
           startHum();
           setDesignStep((current) => current === "idle" ? "wallpaper" : current);
-        } else {
+        } else if (!preserveScene) {
           setDesignStep("idle");
           setPreviewWallpaper(null);
           setPreviewChairColor(null);
@@ -166,7 +167,7 @@ export function LightProvider({ children }) {
     if (options.interaction) {
       setHasInteracted(true);
       localStorage.setItem("first-light-has-interacted", "true");
-      animateTo(resolved);
+      animateTo(resolved, options);
     }
   }, [animateTo, isLightOn]);
 
@@ -209,8 +210,7 @@ export function LightProvider({ children }) {
 
   const turnOffLight = useCallback(() => {
     if (isAnimating || !isLightOn) return;
-    setEndingPhase(0);
-    setLight(false, { interaction: true });
+    setLight(false, { interaction: true, preserveScene: true });
   }, [isAnimating, isLightOn, setLight]);
 
   const registerTarget = useCallback((name, target) => {
