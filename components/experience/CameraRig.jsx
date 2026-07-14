@@ -3,13 +3,17 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { useLight } from "@/components/providers/LightProvider";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 export default function CameraRig() {
   const { camera, gl, pointer, size } = useThree();
+  const { designStep } = useLight();
   const reducedMotion = useReducedMotion();
   const basePosition = useRef(new THREE.Vector3(2.65, 1.48, 4.15));
+  const homePosition = useRef(new THREE.Vector3(2.65, 1.48, 4.15));
   const target = useRef(new THREE.Vector3(-0.22, 1.18, 0.02));
+  const homeTarget = useRef(new THREE.Vector3(-0.22, 1.18, 0.02));
   const dragStart = useRef({ x: 0, y: 0 });
   const dragOffset = useRef({ x: 0, y: 0 });
   const desiredDragOffset = useRef({ x: 0, y: 0 });
@@ -33,10 +37,26 @@ export default function CameraRig() {
       camera.fov = 38;
     }
 
+    homePosition.current.copy(basePosition.current);
+    homeTarget.current.copy(target.current);
     camera.position.copy(basePosition.current);
     camera.lookAt(target.current);
     camera.updateProjectionMatrix();
   }, [camera, size.height, size.width]);
+
+  useEffect(() => {
+    const resetCamera = () => {
+      desiredDragOffset.current = { x: 0, y: 0 };
+      dragOffset.current = { x: 0, y: 0 };
+      basePosition.current.copy(homePosition.current);
+      target.current.copy(homeTarget.current);
+      camera.position.copy(homePosition.current);
+      camera.lookAt(homeTarget.current);
+    };
+
+    window.addEventListener("first-light-reset-camera", resetCamera);
+    return () => window.removeEventListener("first-light-reset-camera", resetCamera);
+  }, [camera]);
 
   useEffect(() => {
     const element = gl.domElement;
@@ -91,6 +111,22 @@ export default function CameraRig() {
   }, [gl, size.height, size.width]);
 
   useFrame(({ clock }) => {
+    const finalView = designStep === "final";
+    if (finalView) {
+      const mobile = size.width < 700;
+      const finalPosition = mobile
+        ? new THREE.Vector3(1.75, 1.55, 6.75)
+        : new THREE.Vector3(2.95, 1.78, 5.35);
+      const finalTarget = mobile
+        ? new THREE.Vector3(-0.78, 0.95, 0.72)
+        : new THREE.Vector3(-0.95, 0.95, 0.75);
+
+      basePosition.current.lerp(finalPosition, 0.025);
+      target.current.lerp(finalTarget, 0.025);
+      desiredDragOffset.current.x = THREE.MathUtils.lerp(desiredDragOffset.current.x, 0, 0.035);
+      desiredDragOffset.current.y = THREE.MathUtils.lerp(desiredDragOffset.current.y, 0, 0.035);
+    }
+
     dragOffset.current.x = THREE.MathUtils.lerp(dragOffset.current.x, desiredDragOffset.current.x, 0.08);
     dragOffset.current.y = THREE.MathUtils.lerp(dragOffset.current.y, desiredDragOffset.current.y, 0.08);
 

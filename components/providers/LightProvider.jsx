@@ -55,6 +55,7 @@ export function LightProvider({ children }) {
   const [previewWallpaper, setPreviewWallpaper] = useState(null);
   const [chairColor, setChairColor] = useState("cream");
   const [previewChairColor, setPreviewChairColor] = useState(null);
+  const [endingPhase, setEndingPhase] = useState(0);
   const targetsRef = useRef({});
   const timelineRef = useRef(null);
   const mountedRef = useRef(false);
@@ -188,7 +189,29 @@ export function LightProvider({ children }) {
     setChairColor(nextColor);
     setPreviewChairColor(null);
     setDesignStep("final");
+    setEndingPhase(0);
   }, []);
+
+  const resetExperience = useCallback(() => {
+    timelineRef.current?.kill();
+    stopHum();
+    setWallpaper("plain");
+    setPreviewWallpaper(null);
+    setChairColor("cream");
+    setPreviewChairColor(null);
+    setEndingPhase(0);
+    setIsLightOn(false);
+    setHasInteracted(false);
+    setDesignStep("idle");
+    applyInstantState(false);
+    window.requestAnimationFrame(() => window.dispatchEvent(new Event("first-light-reset-camera")));
+  }, [applyInstantState, stopHum]);
+
+  const turnOffLight = useCallback(() => {
+    if (isAnimating || !isLightOn) return;
+    setEndingPhase(0);
+    setLight(false, { interaction: true });
+  }, [isAnimating, isLightOn, setLight]);
 
   const registerTarget = useCallback((name, target) => {
     if (target) {
@@ -206,8 +229,41 @@ export function LightProvider({ children }) {
     setIsLightOn(false);
     setHasInteracted(false);
     setDesignStep("idle");
+    setEndingPhase(0);
     applyInstantState(false);
   }, [applyInstantState]);
+
+  useEffect(() => {
+    if (designStep !== "final") {
+      setEndingPhase(0);
+      return undefined;
+    }
+
+    const timers = [
+      window.setTimeout(() => setEndingPhase(1), 1300),
+      window.setTimeout(() => setEndingPhase(2), 3600),
+      window.setTimeout(() => setEndingPhase(3), 5600)
+    ];
+
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, [designStep]);
+
+  useEffect(() => {
+    const targets = targetsRef.current;
+    if (!targets.spotLight || !targets.pointLight || !targets.rectLight || !targets.renderer) return undefined;
+
+    if (designStep !== "final") return undefined;
+
+    const timeline = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+    timeline.to(targets.spotLight, { intensity: 55, duration: 1.8 }, 0);
+    timeline.to(targets.pointLight, { intensity: 2.25, duration: 1.8 }, 0);
+    timeline.to(targets.rectLight, { intensity: 4.2, duration: 1.8 }, 0);
+    timeline.to(targets.renderer, { toneMappingExposure: 1.12, duration: 1.8 }, 0);
+
+    return () => timeline.kill();
+  }, [designStep]);
 
   useEffect(() => {
     if (!mountedRef.current) return;
@@ -223,6 +279,7 @@ export function LightProvider({ children }) {
     previewWallpaper,
     chairColor,
     previewChairColor,
+    endingPhase,
     muted,
     setMuted,
     setPreviewWallpaper,
@@ -230,7 +287,9 @@ export function LightProvider({ children }) {
     chooseWallpaper,
     chooseChairColor,
     markChairSettled,
+    resetExperience,
     setLight,
+    turnOffLight,
     toggleLight,
     registerTarget
   }), [
@@ -239,6 +298,7 @@ export function LightProvider({ children }) {
     chooseWallpaper,
     designStep,
     hasInteracted,
+    endingPhase,
     isAnimating,
     isLightOn,
     markChairSettled,
@@ -247,6 +307,8 @@ export function LightProvider({ children }) {
     previewWallpaper,
     setLight,
     setMuted,
+    resetExperience,
+    turnOffLight,
     toggleLight,
     wallpaper,
     registerTarget
