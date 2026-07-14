@@ -6,10 +6,14 @@ import * as THREE from "three";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 export default function CameraRig() {
-  const { camera, pointer, size } = useThree();
+  const { camera, gl, pointer, size } = useThree();
   const reducedMotion = useReducedMotion();
   const basePosition = useRef(new THREE.Vector3(2.65, 1.48, 4.15));
   const target = useRef(new THREE.Vector3(-0.22, 1.18, 0.02));
+  const dragStart = useRef({ x: 0, y: 0 });
+  const dragOffset = useRef({ x: 0, y: 0 });
+  const desiredDragOffset = useRef({ x: 0, y: 0 });
+  const dragging = useRef(false);
 
   useEffect(() => {
     const mobile = size.width < 700;
@@ -34,16 +38,80 @@ export default function CameraRig() {
     camera.updateProjectionMatrix();
   }, [camera, size.height, size.width]);
 
+  useEffect(() => {
+    const element = gl.domElement;
+
+    const handlePointerDown = (event) => {
+      dragging.current = true;
+      dragStart.current = {
+        x: event.clientX,
+        y: event.clientY
+      };
+      element.setPointerCapture?.(event.pointerId);
+      element.style.cursor = "grabbing";
+    };
+
+    const handlePointerMove = (event) => {
+      if (!dragging.current) return;
+
+      const deltaX = (event.clientX - dragStart.current.x) / Math.max(size.width, 1);
+      const deltaY = (event.clientY - dragStart.current.y) / Math.max(size.height, 1);
+
+      desiredDragOffset.current.x = THREE.MathUtils.clamp(desiredDragOffset.current.x - deltaX * 1.35, -0.95, 0.95);
+      desiredDragOffset.current.y = THREE.MathUtils.clamp(desiredDragOffset.current.y + deltaY * 0.85, -0.38, 0.42);
+      dragStart.current = {
+        x: event.clientX,
+        y: event.clientY
+      };
+    };
+
+    const handlePointerUp = (event) => {
+      dragging.current = false;
+      element.releasePointerCapture?.(event.pointerId);
+      element.style.cursor = "grab";
+    };
+
+    element.style.cursor = "grab";
+    element.style.touchAction = "none";
+    element.addEventListener("pointerdown", handlePointerDown);
+    element.addEventListener("pointermove", handlePointerMove);
+    element.addEventListener("pointerup", handlePointerUp);
+    element.addEventListener("pointercancel", handlePointerUp);
+    element.addEventListener("pointerleave", handlePointerUp);
+
+    return () => {
+      element.style.cursor = "";
+      element.style.touchAction = "";
+      element.removeEventListener("pointerdown", handlePointerDown);
+      element.removeEventListener("pointermove", handlePointerMove);
+      element.removeEventListener("pointerup", handlePointerUp);
+      element.removeEventListener("pointercancel", handlePointerUp);
+      element.removeEventListener("pointerleave", handlePointerUp);
+    };
+  }, [gl, size.height, size.width]);
+
   useFrame(({ clock }) => {
-    if (reducedMotion) return;
+    dragOffset.current.x = THREE.MathUtils.lerp(dragOffset.current.x, desiredDragOffset.current.x, 0.08);
+    dragOffset.current.y = THREE.MathUtils.lerp(dragOffset.current.y, desiredDragOffset.current.y, 0.08);
+
+    if (reducedMotion) {
+      const lookTarget = target.current.clone();
+      lookTarget.x += dragOffset.current.x;
+      lookTarget.y += dragOffset.current.y;
+      camera.lookAt(lookTarget);
+      return;
+    }
 
     const time = clock.getElapsedTime();
-    const nextX = basePosition.current.x + pointer.x * 0.055 + Math.sin(time * 0.32) * 0.012;
-    const nextY = basePosition.current.y + pointer.y * 0.035 + Math.sin(time * 0.41) * 0.009;
+    const nextX = basePosition.current.x + dragOffset.current.x * 0.2 + pointer.x * 0.055 + Math.sin(time * 0.32) * 0.012;
+    const nextY = basePosition.current.y + dragOffset.current.y * 0.16 + pointer.y * 0.035 + Math.sin(time * 0.41) * 0.009;
     const nextZ = basePosition.current.z + Math.cos(time * 0.27) * 0.012;
+    const lookTarget = target.current.clone();
+    lookTarget.x += dragOffset.current.x;
+    lookTarget.y += dragOffset.current.y;
 
     camera.position.lerp({ x: nextX, y: nextY, z: nextZ }, 0.045);
-    camera.lookAt(target.current);
+    camera.lookAt(lookTarget);
   });
 
   return null;

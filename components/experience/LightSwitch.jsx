@@ -9,6 +9,7 @@ export default function LightSwitch({ position }) {
   const [hovered, setHovered] = useState(false);
   const toggleRef = useRef(null);
   const instructionRef = useRef(null);
+  const pointerDownRef = useRef(null);
 
   useCursor(hovered);
 
@@ -49,6 +50,15 @@ export default function LightSwitch({ position }) {
         onPointerLeave={() => setHovered(false)}
         onPointerDown={(event) => {
           event.stopPropagation();
+          pointerDownRef.current = { x: event.clientX, y: event.clientY };
+        }}
+        onPointerUp={(event) => {
+          event.stopPropagation();
+          const start = pointerDownRef.current;
+          pointerDownRef.current = null;
+          const moved = start ? Math.hypot(event.clientX - start.x, event.clientY - start.y) : 0;
+
+          if (moved > 8) return;
           if (!isAnimating) toggleLight();
         }}
       >
