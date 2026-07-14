@@ -195,7 +195,7 @@ export default function Room() {
           <planeGeometry args={[8.5, 4.9]} />
           <meshStandardMaterial
             ref={ceilingMaterialRef}
-            color="#30363b"
+            color="#08090a"
             roughness={0.96}
             metalness={0}
           />
@@ -206,7 +206,7 @@ export default function Room() {
           <meshStandardMaterial
             ref={floorMaterialRef}
             map={floorTexture}
-            color="#2b3034"
+            color="#08090a"
             roughness={0.94}
             metalness={0}
           />

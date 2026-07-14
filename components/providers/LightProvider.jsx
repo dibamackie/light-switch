@@ -12,8 +12,8 @@ const DARK_THEME = {
   background: "#111721",
   fog: "#151c27",
   wall: "#3a4045",
-  ceiling: "#30363b",
-  floor: "#2b3034",
+  ceiling: "#08090a",
+  floor: "#08090a",
   exposure: 0.84,
   ambient: 0.58,
   environment: 0.18,
@@ -32,8 +32,8 @@ const LIGHT_THEME = {
   background: "#e5dfd1",
   fog: "#d9d0bf",
   wall: "#e5dfd3",
-  ceiling: "#ded7c8",
-  floor: "#bfb9ae",
+  ceiling: "#08090a",
+  floor: "#08090a",
   exposure: 1.04,
   ambient: 1.15,
   environment: 0.75,
@@ -149,8 +149,8 @@ export function LightProvider({ children }) {
 
     if (targets.wallMaterial) timeline.to(targets.wallMaterial.color, { r: on ? 0.898 : 0.227, g: on ? 0.875 : 0.251, b: on ? 0.827 : 0.271, duration: 1.1 }, 0.24);
     if (targets.leftWallMaterial) timeline.to(targets.leftWallMaterial.color, { r: on ? 0.898 : 0.227, g: on ? 0.875 : 0.251, b: on ? 0.827 : 0.271, duration: 1.1 }, 0.24);
-    if (targets.ceilingMaterial) timeline.to(targets.ceilingMaterial.color, { r: on ? 0.871 : 0.188, g: on ? 0.843 : 0.212, b: on ? 0.784 : 0.231, duration: 1.1 }, 0.24);
-    if (targets.floorMaterial) timeline.to(targets.floorMaterial.color, { r: on ? 0.749 : 0.169, g: on ? 0.725 : 0.188, b: on ? 0.682 : 0.204, duration: 1.1 }, 0.24);
+    if (targets.ceilingMaterial) timeline.to(targets.ceilingMaterial.color, { r: 0.031, g: 0.035, b: 0.039, duration: 1.1 }, 0.24);
+    if (targets.floorMaterial) timeline.to(targets.floorMaterial.color, { r: 0.031, g: 0.035, b: 0.039, duration: 1.1 }, 0.24);
     if (targets.haze) timeline.to(targets.haze.material, { opacity: theme.hazeOpacity, duration: 1.0 }, 0.24);
 
     timeline.to(document.documentElement, { "--page-bg": theme.pageBg, "--page-fg": theme.pageFg, duration: 1.0 }, 0.24);
