@@ -118,40 +118,43 @@ export default function SceneInterface() {
       )}
 
       {designStep === "final" && (
-        <section className="pointer-events-none fixed inset-x-5 bottom-[10dvh] z-30 mx-auto max-w-3xl text-center text-[#25231f] sm:bottom-[12dvh]">
+        <>
+        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 h-[54dvh] bg-gradient-to-t from-[#08090a]/82 via-[#08090a]/42 to-transparent" />
+        <section className="pointer-events-none fixed inset-x-5 bottom-[8dvh] z-30 mx-auto max-w-3xl text-center text-white drop-shadow-[0_2px_18px_rgba(0,0,0,0.65)] sm:bottom-[10dvh]">
           <div className={`transition duration-[1600ms] ${endingPhase >= 1 ? "translate-y-0 opacity-100 blur-0" : "translate-y-4 opacity-0 blur-sm"}`}>
-            <p className="text-balance text-2xl font-medium leading-tight sm:text-5xl">
-              Great ideas aren’t found.
+            <p className="text-balance text-3xl font-medium leading-tight sm:text-5xl">
+              Great ideas aren&apos;t found.
             </p>
-            <p className="mt-2 text-balance text-2xl font-medium leading-tight sm:text-5xl">
-              They’re built—one decision at a time.
+            <p className="mt-2 text-balance text-3xl font-medium leading-tight sm:text-5xl">
+              They&apos;re built - one decision at a time.
             </p>
           </div>
 
-          <p className={`mt-8 text-sm uppercase tracking-[0.28em] text-current/55 transition duration-[1400ms] ${endingPhase >= 2 ? "translate-y-0 opacity-100 blur-0" : "translate-y-3 opacity-0 blur-sm"}`}>
+          <p className={`mt-7 text-sm uppercase tracking-[0.3em] text-white/72 transition duration-[1400ms] ${endingPhase >= 2 ? "translate-y-0 opacity-100 blur-0" : "translate-y-3 opacity-0 blur-sm"}`}>
             This space began in darkness.
           </p>
 
-          <div className={`mt-10 transition duration-[1500ms] ${endingPhase >= 3 ? "translate-y-0 opacity-100 blur-0" : "translate-y-4 opacity-0 blur-sm"}`}>
+          <div className={`mt-9 transition duration-[1500ms] ${endingPhase >= 3 ? "translate-y-0 opacity-100 blur-0" : "translate-y-4 opacity-0 blur-sm"}`}>
             <h1 className="text-balance text-4xl font-medium leading-none sm:text-7xl">Where Ideas Begin</h1>
             <div className="pointer-events-auto mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <button
                 type="button"
                 onClick={resetExperience}
-                className="rounded-sm border border-current/25 px-5 py-3 text-sm text-current/75 transition hover:border-current/55 hover:text-current focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200"
+                className="rounded-sm border border-white/35 px-5 py-3 text-sm text-white/82 transition hover:border-white/70 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200"
               >
                 Experience it again
               </button>
               <button
                 type="button"
                 onClick={turnOffLight}
-                className="rounded-sm border border-current/20 px-5 py-3 text-sm text-current/65 transition hover:border-current/50 hover:text-current focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200"
+                className="rounded-sm border border-white/25 px-5 py-3 text-sm text-white/72 transition hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200"
               >
                 Turn off the light
               </button>
             </div>
           </div>
         </section>
+        </>
       )}
 
       {designStep === "wallpaper" && (
