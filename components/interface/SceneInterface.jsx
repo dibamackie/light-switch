@@ -26,6 +26,30 @@ function SwatchButton({ label, selected, swatchClassName = "", swatchStyle, onCh
   );
 }
 
+function WallpaperChoiceButton({ label, selected, swatchStyle, onChoose, onPreview, onPreviewEnd }) {
+  return (
+    <button
+      type="button"
+      aria-label={`Choose ${label} wallpaper`}
+      aria-pressed={selected}
+      onClick={onChoose}
+      onFocus={onPreview}
+      onBlur={onPreviewEnd}
+      onMouseEnter={onPreview}
+      onMouseLeave={onPreviewEnd}
+      className={`flex w-full items-center gap-3 rounded-sm border px-3 py-3 text-left transition hover:bg-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200 ${
+        selected ? "border-current/55 bg-black/5" : "border-current/15"
+      }`}
+    >
+      <span className="block h-12 w-12 shrink-0 rounded-sm border border-current/20 shadow-sm" style={swatchStyle} />
+      <span className="grid gap-1">
+        <span className="text-xs font-medium uppercase tracking-[0.2em] text-current">{label}</span>
+        <span className="text-xs text-current/50">Preview on hover</span>
+      </span>
+    </button>
+  );
+}
+
 export default function SceneInterface() {
   const {
     chairColor,
@@ -64,22 +88,47 @@ export default function SceneInterface() {
       </div>
 
       {designStep === "wallpaper" && (
-        <div className="fixed bottom-20 left-4 z-30 flex max-w-[calc(100vw-2rem)] gap-3 overflow-x-auto py-2 text-current sm:bottom-8 sm:left-10">
-          {wallpaperOptions.map((option) => (
-            <SwatchButton
-              key={option.id}
-              label={option.label}
-              selected={wallpaper === option.id}
-              onChoose={() => chooseWallpaper(option.id)}
-              onPreview={() => setPreviewWallpaper(option.id)}
-              onPreviewEnd={() => setPreviewWallpaper(null)}
-              swatchStyle={{
-                backgroundColor: option.base,
-                backgroundImage: getWallpaperPreview(option)
-              }}
-            />
-          ))}
-        </div>
+        <>
+          <div className="fixed bottom-20 left-4 z-30 flex max-w-[calc(100vw-2rem)] gap-3 overflow-x-auto py-2 text-current sm:hidden">
+            {wallpaperOptions.map((option) => (
+              <SwatchButton
+                key={option.id}
+                label={option.label}
+                selected={wallpaper === option.id}
+                onChoose={() => chooseWallpaper(option.id)}
+                onPreview={() => setPreviewWallpaper(option.id)}
+                onPreviewEnd={() => setPreviewWallpaper(null)}
+                swatchStyle={{
+                  backgroundColor: option.base,
+                  backgroundImage: getWallpaperPreview(option)
+                }}
+              />
+            ))}
+          </div>
+
+          <aside className="fixed right-8 top-1/2 z-30 hidden w-64 -translate-y-1/2 text-[#25231f] motion-safe:animate-message-rise sm:block">
+            <div className="mb-4">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-current/50">Wall treatment</p>
+              <p className="mt-2 text-lg font-medium leading-tight text-current">Choose a wallpaper</p>
+            </div>
+            <div className="grid gap-3">
+              {wallpaperOptions.map((option) => (
+                <WallpaperChoiceButton
+                  key={option.id}
+                  label={option.label}
+                  selected={wallpaper === option.id}
+                  onChoose={() => chooseWallpaper(option.id)}
+                  onPreview={() => setPreviewWallpaper(option.id)}
+                  onPreviewEnd={() => setPreviewWallpaper(null)}
+                  swatchStyle={{
+                    backgroundColor: option.base,
+                    backgroundImage: getWallpaperPreview(option)
+                  }}
+                />
+              ))}
+            </div>
+          </aside>
+        </>
       )}
 
       {designStep === "chair-color" && (
@@ -160,11 +209,16 @@ function getWallpaperPreview(option) {
   }
 
   if (option.pattern === "grid") {
-    return `linear-gradient(${option.line} 1px, transparent 1px), linear-gradient(90deg, ${option.line} 1px, transparent 1px)`;
+    return `repeating-linear-gradient(0deg, transparent 0 10px, ${option.line} 10px 11px), repeating-linear-gradient(90deg, transparent 0 10px, ${option.line} 10px 11px)`;
   }
 
   if (option.pattern === "arc") {
-    return `radial-gradient(circle at 16px 18px, transparent 0 9px, ${option.line} 10px 11px, transparent 12px)`;
+    return `
+      radial-gradient(ellipse at 12px 18px, transparent 0 8px, ${option.line} 9px 10px, transparent 11px),
+      radial-gradient(ellipse at 30px 18px, transparent 0 8px, ${option.line} 9px 10px, transparent 11px),
+      radial-gradient(ellipse at 12px 42px, transparent 0 8px, ${option.line} 9px 10px, transparent 11px),
+      radial-gradient(ellipse at 30px 42px, transparent 0 8px, ${option.line} 9px 10px, transparent 11px)
+    `;
   }
 
   return `radial-gradient(circle, ${option.accent} 0 1px, transparent 1px)`;
