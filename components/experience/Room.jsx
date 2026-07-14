@@ -13,6 +13,7 @@ import DustParticles from "./DustParticles";
 import Lamp from "./Lamp";
 import Lighting from "./Lighting";
 import LightSwitch from "./LightSwitch";
+import WallArtwork from "./WallArtwork";
 
 function drawWallpaperPattern(context, size, option) {
   if (option.pattern === "vertical") {
@@ -253,6 +254,7 @@ export default function Room() {
 
         <Lamp position={[-0.62, 1.52, -0.02]} />
         <LightSwitch position={[0.88, 1.18, 0.02]} />
+        <WallArtwork />
         {designStep !== "idle" && <Chair />}
       </group>
 
