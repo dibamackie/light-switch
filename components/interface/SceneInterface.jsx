@@ -100,17 +100,17 @@ export default function SceneInterface() {
       {showStageMessage && (
         <div
           key={designStep}
-          className={`pointer-events-none fixed left-5 right-5 top-[8dvh] z-20 max-w-[19rem] motion-safe:animate-message-rise sm:left-10 sm:right-auto sm:top-[12dvh] sm:max-w-[22rem] md:left-16 md:max-w-xl ${messageColor}`}
+          className={`pointer-events-none fixed left-4 right-4 top-[6dvh] z-20 max-w-[18rem] motion-safe:animate-message-rise sm:left-10 sm:right-auto sm:top-[12dvh] sm:max-w-[22rem] md:left-16 md:max-w-xl ${messageColor}`}
         >
           <p className="mb-3 flex items-center gap-3 text-[9px] uppercase tracking-[0.28em] opacity-55 sm:mb-5 sm:text-[10px] sm:tracking-[0.34em]">
             <span className="h-px w-6 bg-current sm:w-8" />
             {eyebrow}
           </p>
-          <p className="text-balance text-2xl font-medium leading-[1.06] sm:text-5xl md:text-6xl">
+          <p className="text-balance text-[1.55rem] font-medium leading-[1.06] sm:text-5xl md:text-6xl">
             {message.heading}
           </p>
           {message.body && (
-            <p className="mt-4 max-w-[17rem] text-pretty text-sm leading-6 opacity-68 sm:mt-6 sm:max-w-sm sm:text-lg sm:leading-7">
+            <p className="mt-3 max-w-[16rem] text-pretty text-sm leading-6 opacity-68 sm:mt-6 sm:max-w-sm sm:text-lg sm:leading-7">
               {message.body}
             </p>
           )}
@@ -119,35 +119,35 @@ export default function SceneInterface() {
 
       {designStep === "final" && (
         <>
-        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 h-[54dvh] bg-gradient-to-t from-[#08090a]/82 via-[#08090a]/42 to-transparent" />
-        <section className="pointer-events-none fixed inset-x-5 bottom-[8dvh] z-30 mx-auto max-w-3xl text-center text-white drop-shadow-[0_2px_18px_rgba(0,0,0,0.65)] sm:bottom-[10dvh]">
+          <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 h-[68dvh] bg-gradient-to-t from-[#08090a]/88 via-[#08090a]/48 to-transparent sm:h-[54dvh]" />
+          <section className="pointer-events-none fixed inset-x-4 bottom-[5dvh] z-30 mx-auto max-w-3xl text-center text-white drop-shadow-[0_2px_18px_rgba(0,0,0,0.65)] sm:bottom-[10dvh]">
           <div className={`transition duration-[1600ms] ${endingPhase >= 1 ? "translate-y-0 opacity-100 blur-0" : "translate-y-4 opacity-0 blur-sm"}`}>
-            <p className="text-balance text-3xl font-medium leading-tight sm:text-5xl">
+              <p className="text-balance text-2xl font-medium leading-tight sm:text-5xl">
               Great ideas aren&apos;t found.
             </p>
-            <p className="mt-2 text-balance text-3xl font-medium leading-tight sm:text-5xl">
+              <p className="mt-2 text-balance text-2xl font-medium leading-tight sm:text-5xl">
               They&apos;re built - one decision at a time.
             </p>
           </div>
 
-          <p className={`mt-7 text-sm uppercase tracking-[0.3em] text-white/72 transition duration-[1400ms] ${endingPhase >= 2 ? "translate-y-0 opacity-100 blur-0" : "translate-y-3 opacity-0 blur-sm"}`}>
+            <p className={`mt-5 text-xs uppercase tracking-[0.24em] text-white/72 transition duration-[1400ms] sm:mt-7 sm:text-sm sm:tracking-[0.3em] ${endingPhase >= 2 ? "translate-y-0 opacity-100 blur-0" : "translate-y-3 opacity-0 blur-sm"}`}>
             This space began in darkness.
           </p>
 
           <div className={`mt-9 transition duration-[1500ms] ${endingPhase >= 3 ? "translate-y-0 opacity-100 blur-0" : "translate-y-4 opacity-0 blur-sm"}`}>
-            <h1 className="text-balance text-4xl font-medium leading-none sm:text-7xl">Where Ideas Begin</h1>
-            <div className="pointer-events-auto mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <h1 className="text-balance text-3xl font-medium leading-none sm:text-7xl">Where Ideas Begin</h1>
+              <div className="pointer-events-auto mt-6 flex flex-col items-center justify-center gap-2 sm:mt-8 sm:flex-row sm:gap-3">
               <button
                 type="button"
                 onClick={resetExperience}
-                className="rounded-sm border border-white/35 px-5 py-3 text-sm text-white/82 transition hover:border-white/70 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200"
+                  className="w-full max-w-[15rem] rounded-sm border border-white/35 px-4 py-2.5 text-sm text-white/82 transition hover:border-white/70 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200 sm:w-auto sm:max-w-none sm:px-5 sm:py-3"
               >
                 Experience it again
               </button>
               <button
                 type="button"
                 onClick={turnOffLight}
-                className="rounded-sm border border-white/25 px-5 py-3 text-sm text-white/72 transition hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200"
+                  className="w-full max-w-[15rem] rounded-sm border border-white/25 px-4 py-2.5 text-sm text-white/72 transition hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200 sm:w-auto sm:max-w-none sm:px-5 sm:py-3"
               >
                 Turn off the light
               </button>
@@ -159,7 +159,7 @@ export default function SceneInterface() {
 
       {designStep === "wallpaper" && (
         <>
-          <div className="fixed bottom-20 left-4 z-30 flex max-w-[calc(100vw-2rem)] gap-3 overflow-x-auto py-2 text-current sm:hidden">
+          <div className="fixed bottom-[4.75rem] left-4 z-30 flex max-w-[calc(100vw-2rem)] gap-3 overflow-x-auto py-2 text-current sm:hidden">
             {wallpaperOptions.map((option) => (
               <SwatchButton
                 key={option.id}
@@ -203,7 +203,7 @@ export default function SceneInterface() {
 
       {designStep === "chair-color" && (
         <>
-          <div className="fixed bottom-20 left-4 z-30 flex max-w-[calc(100vw-2rem)] gap-3 overflow-x-auto py-2 text-current sm:hidden">
+          <div className="fixed bottom-[4.75rem] left-4 z-30 flex max-w-[calc(100vw-2rem)] gap-3 overflow-x-auto py-2 text-current sm:hidden">
             {chairColorOptions.map((option) => (
               <SwatchButton
                 key={option.id}

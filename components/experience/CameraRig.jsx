@@ -24,9 +24,9 @@ export default function CameraRig() {
     const landscape = size.width > size.height;
 
     if (mobile && !landscape) {
-      basePosition.current.set(2.12, 1.42, 6.25);
-      target.current.set(-0.18, 1.05, 0.18);
-      camera.fov = 56;
+      basePosition.current.set(2.35, 1.55, 7.05);
+      target.current.set(-0.58, 1.0, 0.36);
+      camera.fov = 60;
     } else if (mobile && landscape) {
       basePosition.current.set(2.62, 1.24, 4.1);
       target.current.set(0.05, 1.13, 0.03);
@@ -115,10 +115,10 @@ export default function CameraRig() {
     if (finalView) {
       const mobile = size.width < 700;
       const finalPosition = mobile
-        ? new THREE.Vector3(1.75, 1.55, 6.75)
+        ? new THREE.Vector3(2.15, 1.65, 7.35)
         : new THREE.Vector3(2.95, 1.78, 5.35);
       const finalTarget = mobile
-        ? new THREE.Vector3(-0.78, 0.95, 0.72)
+        ? new THREE.Vector3(-0.9, 0.95, 0.72)
         : new THREE.Vector3(-0.95, 0.95, 0.75);
 
       basePosition.current.lerp(finalPosition, 0.025);

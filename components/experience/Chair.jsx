@@ -18,9 +18,9 @@ export default function Chair() {
   const groupRef = useRef(null);
   const settleTimerRef = useRef(null);
   const activeColor = getChairColor(previewChairColor || chairColor).color;
-  const chairScale = isMobile ? 1.55 : 2.1;
-  const startPosition = useMemo(() => isMobile ? [-1.16, 0, 1.2] : [-1.72, 0, 1.28], [isMobile]);
-  const settledPosition = useMemo(() => isMobile ? [-1.04, 0, 1.08] : [-1.58, 0, 1.18], [isMobile]);
+  const chairScale = isMobile ? 1.32 : 2.1;
+  const startPosition = useMemo(() => isMobile ? [-1.02, 0, 1.18] : [-1.72, 0, 1.28], [isMobile]);
+  const settledPosition = useMemo(() => isMobile ? [-0.92, 0, 1.04] : [-1.58, 0, 1.18], [isMobile]);
 
   const { chairScene, fabricMaterial, settledY } = useMemo(() => {
     const clone = scene.clone(true);
