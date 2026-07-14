@@ -173,7 +173,7 @@ export function LightProvider({ children }) {
 
   const toggleLight = useCallback(() => {
     if (isAnimating) return;
-    setLight(!isLightOn, { interaction: true });
+    setLight(!isLightOn, { interaction: true, preserveScene: isLightOn });
   }, [isAnimating, isLightOn, setLight]);
 
   const chooseWallpaper = useCallback((nextWallpaper) => {
