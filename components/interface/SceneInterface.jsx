@@ -50,6 +50,30 @@ function WallpaperChoiceButton({ label, selected, swatchStyle, onChoose, onPrevi
   );
 }
 
+function ColorChoiceButton({ label, selected, swatchStyle, onChoose, onPreview, onPreviewEnd }) {
+  return (
+    <button
+      type="button"
+      aria-label={`Choose ${label} chair color`}
+      aria-pressed={selected}
+      onClick={onChoose}
+      onFocus={onPreview}
+      onBlur={onPreviewEnd}
+      onMouseEnter={onPreview}
+      onMouseLeave={onPreviewEnd}
+      className={`flex w-full items-center gap-3 rounded-sm border px-3 py-3 text-left transition hover:bg-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200 ${
+        selected ? "border-current/55 bg-black/5" : "border-current/15"
+      }`}
+    >
+      <span className="block h-12 w-12 shrink-0 rounded-full border border-current/20 shadow-sm" style={swatchStyle} />
+      <span className="grid gap-1">
+        <span className="text-xs font-medium uppercase tracking-[0.2em] text-current">{label}</span>
+        <span className="text-xs text-current/50">Preview on hover</span>
+      </span>
+    </button>
+  );
+}
+
 export default function SceneInterface() {
   const {
     chairColor,
@@ -132,19 +156,41 @@ export default function SceneInterface() {
       )}
 
       {designStep === "chair-color" && (
-        <div className="fixed bottom-20 left-4 z-30 flex max-w-[calc(100vw-2rem)] gap-3 overflow-x-auto py-2 text-current sm:bottom-8 sm:left-10">
-          {chairColorOptions.map((option) => (
-            <SwatchButton
-              key={option.id}
-              label={option.label}
-              selected={chairColor === option.id}
-              onChoose={() => chooseChairColor(option.id)}
-              onPreview={() => setPreviewChairColor(option.id)}
-              onPreviewEnd={() => setPreviewChairColor(null)}
-              swatchStyle={{ backgroundColor: option.color }}
-            />
-          ))}
-        </div>
+        <>
+          <div className="fixed bottom-20 left-4 z-30 flex max-w-[calc(100vw-2rem)] gap-3 overflow-x-auto py-2 text-current sm:hidden">
+            {chairColorOptions.map((option) => (
+              <SwatchButton
+                key={option.id}
+                label={option.label}
+                selected={chairColor === option.id}
+                onChoose={() => chooseChairColor(option.id)}
+                onPreview={() => setPreviewChairColor(option.id)}
+                onPreviewEnd={() => setPreviewChairColor(null)}
+                swatchStyle={{ backgroundColor: option.color }}
+              />
+            ))}
+          </div>
+
+          <aside className="fixed right-8 top-1/2 z-30 hidden w-64 -translate-y-1/2 text-[#25231f] motion-safe:animate-message-rise sm:block">
+            <div className="mb-4">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-current/50">Chair finish</p>
+              <p className="mt-2 text-lg font-medium leading-tight text-current">Choose a color</p>
+            </div>
+            <div className="grid gap-3">
+              {chairColorOptions.map((option) => (
+                <ColorChoiceButton
+                  key={option.id}
+                  label={option.label}
+                  selected={chairColor === option.id}
+                  onChoose={() => chooseChairColor(option.id)}
+                  onPreview={() => setPreviewChairColor(option.id)}
+                  onPreviewEnd={() => setPreviewChairColor(null)}
+                  swatchStyle={{ backgroundColor: option.color }}
+                />
+              ))}
+            </div>
+          </aside>
+        </>
       )}
 
       <button
