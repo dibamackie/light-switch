@@ -92,6 +92,7 @@ export default function Room() {
   const { scene, gl } = useThree();
   const { designStep, previewWallpaper, registerTarget, wallpaper } = useLight();
   const wallMaterialRef = useRef(null);
+  const leftWallMaterialRef = useRef(null);
   const ceilingMaterialRef = useRef(null);
   const floorMaterialRef = useRef(null);
   const activeWallpaper = previewWallpaper || wallpaper;
@@ -116,11 +117,13 @@ export default function Room() {
 
   useEffect(() => {
     registerTarget("wallMaterial", wallMaterialRef.current);
+    registerTarget("leftWallMaterial", leftWallMaterialRef.current);
     registerTarget("ceilingMaterial", ceilingMaterialRef.current);
     registerTarget("floorMaterial", floorMaterialRef.current);
 
     return () => {
       registerTarget("wallMaterial", null);
+      registerTarget("leftWallMaterial", null);
       registerTarget("ceilingMaterial", null);
       registerTarget("floorMaterial", null);
     };
@@ -135,11 +138,25 @@ export default function Room() {
     material.opacity = 0.78;
     material.transparent = true;
 
+    if (leftWallMaterialRef.current) {
+      leftWallMaterialRef.current.map = wallTexture;
+      leftWallMaterialRef.current.needsUpdate = true;
+      leftWallMaterialRef.current.opacity = 0.78;
+      leftWallMaterialRef.current.transparent = true;
+    }
+
     gsap.to(material, {
       opacity: 1,
       duration: 0.45,
       ease: "power2.out"
     });
+    if (leftWallMaterialRef.current) {
+      gsap.to(leftWallMaterialRef.current, {
+        opacity: 1,
+        duration: 0.45,
+        ease: "power2.out"
+      });
+    }
 
     return () => {
       wallTexture.dispose();
@@ -156,6 +173,17 @@ export default function Room() {
           <boxGeometry args={[8.5, 3.8, 0.12]} />
           <meshStandardMaterial
             ref={wallMaterialRef}
+            map={wallTexture}
+            color="#3a4045"
+            roughness={0.92}
+            metalness={0}
+          />
+        </mesh>
+
+        <mesh receiveShadow position={[-4.19, 1.72, 1.92]}>
+          <boxGeometry args={[0.12, 3.8, 4.9]} />
+          <meshStandardMaterial
+            ref={leftWallMaterialRef}
             map={wallTexture}
             color="#3a4045"
             roughness={0.92}
@@ -186,6 +214,11 @@ export default function Room() {
 
         <mesh receiveShadow position={[0, -0.15, -0.1]} rotation={[0, 0, 0]}>
           <boxGeometry args={[8.5, 0.1, 0.16]} />
+          <meshStandardMaterial color="#24282b" roughness={0.95} />
+        </mesh>
+
+        <mesh receiveShadow position={[-4.13, -0.15, 1.9]}>
+          <boxGeometry args={[0.16, 0.1, 4.9]} />
           <meshStandardMaterial color="#24282b" roughness={0.95} />
         </mesh>
 

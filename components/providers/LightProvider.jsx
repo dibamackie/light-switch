@@ -73,6 +73,7 @@ export function LightProvider({ children }) {
       targets.scene.fog.color.set(theme.fog);
     }
     if (targets.wallMaterial) targets.wallMaterial.color.set(theme.wall);
+    if (targets.leftWallMaterial) targets.leftWallMaterial.color.set(theme.wall);
     if (targets.ceilingMaterial) targets.ceilingMaterial.color.set(theme.ceiling);
     if (targets.floorMaterial) targets.floorMaterial.color.set(theme.floor);
     if (targets.ambientLight) targets.ambientLight.intensity = theme.ambient;
@@ -147,6 +148,7 @@ export function LightProvider({ children }) {
     }
 
     if (targets.wallMaterial) timeline.to(targets.wallMaterial.color, { r: on ? 0.898 : 0.227, g: on ? 0.875 : 0.251, b: on ? 0.827 : 0.271, duration: 1.1 }, 0.24);
+    if (targets.leftWallMaterial) timeline.to(targets.leftWallMaterial.color, { r: on ? 0.898 : 0.227, g: on ? 0.875 : 0.251, b: on ? 0.827 : 0.271, duration: 1.1 }, 0.24);
     if (targets.ceilingMaterial) timeline.to(targets.ceilingMaterial.color, { r: on ? 0.871 : 0.188, g: on ? 0.843 : 0.212, b: on ? 0.784 : 0.231, duration: 1.1 }, 0.24);
     if (targets.floorMaterial) timeline.to(targets.floorMaterial.color, { r: on ? 0.749 : 0.169, g: on ? 0.725 : 0.188, b: on ? 0.682 : 0.204, duration: 1.1 }, 0.24);
     if (targets.haze) timeline.to(targets.haze.material, { opacity: theme.hazeOpacity, duration: 1.0 }, 0.24);
