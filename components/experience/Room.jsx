@@ -60,6 +60,34 @@ function drawWallpaperPattern(context, size, option) {
   }
 }
 
+function drawLaminatePattern(context, size) {
+  const plankHeight = 32;
+  const plankColors = ["#3a2d23", "#443529", "#2f261f", "#4a392b"];
+
+  for (let y = 0; y < size; y += plankHeight) {
+    const offset = (y / plankHeight) % 2 === 0 ? 0 : 58;
+
+    for (let x = -offset; x < size; x += 116) {
+      const color = plankColors[Math.abs((x + y) / plankHeight) % plankColors.length | 0];
+      context.fillStyle = color;
+      context.fillRect(x, y, 116, plankHeight);
+
+      context.strokeStyle = "rgba(10, 8, 6, 0.34)";
+      context.lineWidth = 1;
+      context.strokeRect(x + 0.5, y + 0.5, 115, plankHeight - 1);
+
+      for (let grain = 0; grain < 5; grain += 1) {
+        const grainY = y + 6 + grain * 5 + Math.random() * 2;
+        context.strokeStyle = `rgba(210, 174, 128, ${0.055 + Math.random() * 0.035})`;
+        context.beginPath();
+        context.moveTo(x + 8, grainY);
+        context.bezierCurveTo(x + 36, grainY + Math.random() * 4 - 2, x + 74, grainY + Math.random() * 4 - 2, x + 108, grainY);
+        context.stroke();
+      }
+    }
+  }
+}
+
 function makeSurfaceTexture(kind, wallpaperId = "plain") {
   const size = 256;
   const canvas = document.createElement("canvas");
@@ -68,21 +96,22 @@ function makeSurfaceTexture(kind, wallpaperId = "plain") {
   canvas.width = size;
   canvas.height = size;
 
-  context.fillStyle = kind === "wall" ? wallpaper.base : "#bfb9ae";
+  context.fillStyle = kind === "wall" ? wallpaper.base : "#3a2d23";
   context.fillRect(0, 0, size, size);
 
   if (kind === "wall") drawWallpaperPattern(context, size, wallpaper);
+  if (kind === "floor") drawLaminatePattern(context, size);
 
   for (let index = 0; index < 1600; index += 1) {
     const value = 180 + Math.random() * 50;
-    context.fillStyle = `rgba(${value}, ${value}, ${value}, ${kind === "wall" ? 0.055 : 0.075})`;
+    context.fillStyle = `rgba(${value}, ${value}, ${value}, ${kind === "wall" ? 0.055 : 0.035})`;
     context.fillRect(Math.random() * size, Math.random() * size, Math.random() * 2.4, Math.random() * 2.4);
   }
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(kind === "wall" ? 3.2 : 4.5, kind === "wall" ? 2.4 : 3);
+  texture.repeat.set(kind === "wall" ? 3.2 : 3.6, kind === "wall" ? 2.4 : 4.8);
   texture.colorSpace = THREE.SRGBColorSpace;
 
   return texture;
@@ -206,8 +235,8 @@ export default function Room() {
           <meshStandardMaterial
             ref={floorMaterialRef}
             map={floorTexture}
-            color="#08090a"
-            roughness={0.94}
+            color="#2c2119"
+            roughness={0.72}
             metalness={0}
           />
         </mesh>
