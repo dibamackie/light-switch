@@ -58,6 +58,23 @@ button {
   animation: message-rise 1.65s cubic-bezier(0.19, 1, 0.22, 1) both;
 }
 
+@keyframes loader-breathe {
+  0%,
+  100% {
+    opacity: 0.48;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.68;
+    transform: scale(1.03);
+  }
+}
+
+.animate-loader-breathe {
+  animation: loader-breathe 7s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
